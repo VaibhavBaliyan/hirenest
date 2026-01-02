@@ -39,12 +39,8 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// Before saving to database, this runs automatically
 userSchema.pre("save", async function (next) {
-  // Only hash if password is new or modified
   if (!this.isModified("password")) return next();
-
-  // Hash the password
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
