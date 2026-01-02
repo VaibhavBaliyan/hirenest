@@ -15,7 +15,6 @@ const companySchema = new Schema(
       trim: true,
       minlength: 2,
       maxlength: 100,
-      unique: true,
     },
     description: {
       type: String,
@@ -35,6 +34,9 @@ const companySchema = new Schema(
   },
   { timestamps: true }
 );
+
+companySchema.index({ employerId: 1, companyName: 1 }, { unique: true });
+//this will allow same company name with different employers but not same company name with same employer
 
 const Company = mongoose.model("Company", companySchema);
 export default Company;

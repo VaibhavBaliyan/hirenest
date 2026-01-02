@@ -39,12 +39,14 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+//this is used to save the password in hashed form and if any changes are made to the password then it will be hashed again
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
+//this is used to compare the password with the hashed password at login
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
