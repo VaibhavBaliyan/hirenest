@@ -40,10 +40,11 @@ const userSchema = new Schema(
 );
 
 //this is used to save the password in hashed form and if any changes are made to the password then it will be hashed again
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 //this is used to compare the password with the hashed password at login

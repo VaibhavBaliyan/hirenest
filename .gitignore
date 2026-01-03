@@ -11,5 +11,12 @@ yarn-error.log*
 dist/
 build/
 
+# Uploads (user files)
+uploads/
+
+# Test files
+test-*.js
+test-*.json
+
 # OS
 .DS_Store
