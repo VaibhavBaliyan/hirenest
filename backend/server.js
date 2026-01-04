@@ -4,6 +4,9 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import resumeRoutes from "./routes/resumeRoutes.js";
+import applicationRoutes from "./routes/applicationRoutes.js";
+import savedJobRoutes from "./routes/savedJobRoutes.js";
 dotenv.config();
 
 connectDB();
@@ -14,6 +17,9 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/resumes", resumeRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/saved-jobs", savedJobRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "HireNest is running...." });
