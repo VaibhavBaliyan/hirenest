@@ -57,7 +57,11 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" })); // Limit body size
 
 // Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
+app.use(
+  mongoSanitize({
+    replaceWith: "_",
+  })
+);
 
 // Prevent parameter pollution
 app.use(
