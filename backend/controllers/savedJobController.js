@@ -1,64 +1,59 @@
 import Job from "../models/Job.js";
 import SavedJob from "../models/SavedJob.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import AppError from "../utils/AppError.js";
 
-export const saveJob = async (req, res) => {
-  try {
-    const jobId = req.params.id;
-    const job = await Job.findById(jobId);
+// @desc    Save a job
+// @route   POST /api/saved-jobs/:id
+// @access  Private (Job seeker only)
+export const saveJob = asyncHandler(async (req, res, next) => {
+  const jobId = req.params.id;
+  const job = await Job.findById(jobId);
 
-    if (!job) {
-      return res.status(404).json({ message: "Job not found" });
-    }
-
-    const existingSave = await SavedJob.findOne({
-      jobId,
-      userId: req.user._id,
-    });
-
-    if (existingSave) {
-      return res
-        .status(400)
-        .json({ message: "You have already saved this job" });
-    }
-
-    const savedJob = await SavedJob.create({ jobId, userId: req.user._id });
-
-    res.status(201).json({ message: "Job saved successfully", savedJob });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (!job) {
+    throw new AppError("Job not found", 404);
   }
-};
 
-export const getSavedJobs = async (req, res) => {
-  try {
-    const savedJobs = await SavedJob.find({ userId: req.user._id })
-      .populate("jobId")
-      .sort("-savedAt");
+  const existingSave = await SavedJob.findOne({
+    jobId,
+    userId: req.user._id,
+  });
 
-    res.json(savedJobs);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (existingSave) {
+    throw new AppError("Job already saved", 400);
   }
-};
 
-export const unsaveJob = async (req, res) => {
-  try {
-    const savedJob = await SavedJob.findById(req.params.id);
+  const savedJob = await SavedJob.create({ jobId, userId: req.user._id });
 
-    if (!savedJob) {
-      return res.status(404).json({ message: "Job not found" });
-    }
+  res.status(201).json({ message: "Job saved successfully", savedJob });
+});
 
-    if (savedJob.userId.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to unsave this job" });
-    }
+// @desc    Get all saved jobs
+// @route   GET /api/saved-jobs
+// @access  Private (Job seeker only)
+export const getSavedJobs = asyncHandler(async (req, res, next) => {
+  const savedJobs = await SavedJob.find({ userId: req.user._id })
+    .populate("jobId")
+    .sort("-savedAt");
 
-    await savedJob.deleteOne();
+  res.json(savedJobs);
+});
 
-    res.status(200).json({ message: "Job unsaved successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+// @desc    Unsave a job
+// @route   DELETE /api/saved-jobs/:id
+// @access  Private (Job seeker only)
+export const unsaveJob = asyncHandler(async (req, res, next) => {
+  const savedJob = await SavedJob.findById(req.params.id);
+
+  if (!savedJob) {
+    throw new AppError("Saved job not found", 404);
   }
-};
+
+  if (savedJob.userId.toString() !== req.user._id.toString()) {
+    throw new AppError("Not authorized to unsave this job", 403);
+  }
+
+  await savedJob.deleteOne();
+
+  res.json({ message: "Job unsaved successfully" });
+});

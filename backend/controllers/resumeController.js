@@ -1,59 +1,47 @@
 import Resume from "../models/Resume.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import AppError from "../utils/AppError.js";
 
-export const uploadResume = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "Please upload a resume" });
-    }
-
-    await Resume.updateMany({ userId: req.user._id }, { isActive: false });
-
-    const resume = await Resume.create({
-      userId: req.user._id,
-      fileName: req.file.originalname,
-      fileUrl: req.file.path,
-      fileSize: req.file.size,
-      isActive: true,
-    });
-
-    res.status(200).json({ message: "Resume uploaded successfully", resume });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+export const uploadResume = asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    throw new AppError("Please upload a resume", 400);
   }
-};
 
-export const getResume = async (req, res) => {
-  try {
-    const resumes = await Resume.find({ userId: req.user._id }).sort(
-      "-uploadedAt"
-    );
-    res.json(resumes);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  await Resume.updateMany({ userId: req.user._id }, { isActive: false });
+
+  const resume = await Resume.create({
+    userId: req.user._id,
+    fileName: req.file.originalname,
+    fileUrl: req.file.path,
+    fileSize: req.file.size,
+    isActive: true,
+  });
+
+  res.status(201).json({ message: "Resume uploaded successfully", resume });
+});
+
+export const getResume = asyncHandler(async (req, res, next) => {
+  const resumes = await Resume.find({ userId: req.user._id }).sort(
+    "-uploadedAt"
+  );
+  res.json(resumes);
+});
+
+export const setActiveResume = asyncHandler(async (req, res, next) => {
+  const resume = await Resume.findById(req.params.id);
+
+  if (!resume) {
+    throw new AppError("Resume not found", 404);
   }
-};
 
-export const setActiveResume = async (req, res) => {
-  try {
-    const resume = await Resume.findById(req.params.id);
-
-    if (!resume) {
-      return res.status(404).json({ message: "Resume not found" });
-    }
-
-    if (resume.userId.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to update this resume" });
-    }
-
-    await Resume.updateMany({ userId: req.user._id }, { isActive: false });
-
-    resume.isActive = true;
-    await resume.save();
-
-    res.status(200).json({ message: "Resume updated successfully", resume });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (resume.userId.toString() !== req.user._id.toString()) {
+    throw new AppError("Not authorized to update this resume", 403);
   }
-};
+
+  await Resume.updateMany({ userId: req.user._id }, { isActive: false });
+
+  resume.isActive = true;
+  await resume.save();
+
+  res.json({ message: "Resume activated successfully", resume });
+});

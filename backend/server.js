@@ -7,6 +7,7 @@ import jobRoutes from "./routes/jobRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import savedJobRoutes from "./routes/savedJobRoutes.js";
+import errorHandler from "./middleware/errorHandler.js";
 dotenv.config();
 
 connectDB();
@@ -24,6 +25,9 @@ app.use("/api/saved-jobs", savedJobRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "HireNest is running...." });
 });
+
+// Global error handler (must be last)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
