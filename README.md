@@ -337,10 +337,10 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-**Your Name**
+**Vaibhav Baliyan**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)
+- GitHub: [@VaibhavBaliyan](https://github.com/VaibhavBaliyan)
+- LinkedIn: [Vaibhav Baliyan](https://linkedin.com/in/vaibhav-baliyan-cr7)
 
 ## 🙏 Acknowledgments
 
