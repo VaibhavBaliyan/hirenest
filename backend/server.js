@@ -11,6 +11,7 @@ import jobRoutes from "./routes/jobRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import savedJobRoutes from "./routes/savedJobRoutes.js";
+import companyRoutes from "./routes/companyRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -77,6 +78,7 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/saved-jobs", savedJobRoutes);
+app.use("/api/companies", companyRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "HireNest API is running..." });

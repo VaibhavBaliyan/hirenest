@@ -1,5 +1,6 @@
 import Job from "../models/Job.js";
 import Company from "../models/Company.js";
+import Application from "../models/Application.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/AppError.js";
 
@@ -151,4 +152,77 @@ export const closeJob = asyncHandler(async (req, res, next) => {
   await job.save();
 
   res.json({ message: "Job closed successfully", job });
+});
+
+// @desc    Get jobs posted by current employer
+// @route   GET /api/jobs/my-jobs
+// @access  Private (Employer only)
+export const getMyJobs = asyncHandler(async (req, res, next) => {
+  const jobs = await Job.aggregate([
+    {
+      $match: {
+        employerId: req.user._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "applications",
+        localField: "_id",
+        foreignField: "jobId",
+        as: "applications",
+      },
+    },
+    {
+      $addFields: {
+        applicationCount: { $size: "$applications" },
+      },
+    },
+    {
+      $project: {
+        applications: 0,
+      },
+    },
+    {
+      $sort: { createdAt: -1 },
+    },
+  ]);
+
+  await Job.populate(jobs, {
+    path: "company",
+    select: "companyName logo location",
+  });
+
+  res.json(jobs);
+});
+
+// @desc    Get employer stats
+// @route   GET /api/jobs/stats
+// @access  Private (Employer only)
+export const getEmployerStats = asyncHandler(async (req, res, next) => {
+  const totalJobs = await Job.countDocuments({ employerId: req.user._id });
+  const activeJobs = await Job.countDocuments({
+    employerId: req.user._id,
+    status: "active",
+  });
+
+  // Get all job IDs for this employer
+  const jobs = await Job.find({ employerId: req.user._id }).select("_id");
+  const jobIds = jobs.map((job) => job._id);
+
+  // Count applications for these jobs
+  const totalApplications = await Application.countDocuments({
+    jobId: { $in: jobIds },
+  });
+
+  const pendingApplications = await Application.countDocuments({
+    jobId: { $in: jobIds },
+    status: "applied",
+  });
+
+  res.json({
+    totalJobs,
+    activeJobs,
+    totalApplications,
+    pendingApplications,
+  });
 });

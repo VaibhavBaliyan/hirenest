@@ -6,6 +6,8 @@ import {
   updateJob,
   deleteJob,
   closeJob,
+  getMyJobs,
+  getEmployerStats,
 } from "../controllers/jobController.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 import {
@@ -15,6 +17,10 @@ import {
 import validate from "../middleware/validate.js";
 
 const router = express.Router();
+
+// Employer routes (must be before /:id)
+router.get("/my-jobs", protect, restrictTo("employer"), getMyJobs);
+router.get("/stats", protect, restrictTo("employer"), getEmployerStats);
 
 // Public routes
 router.get("/", getAllJobs);
