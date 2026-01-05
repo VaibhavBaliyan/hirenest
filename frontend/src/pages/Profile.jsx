@@ -1,0 +1,282 @@
+import { useState, useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import api from "../utils/axios";
+
+function Profile() {
+  const { user, isAuthenticated, isJobSeeker } = useAuth();
+  const navigate = useNavigate();
+  const [resumes, setResumes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    if (isJobSeeker) {
+      fetchResumes();
+    }
+  }, [isAuthenticated, isJobSeeker, navigate]);
+
+  const fetchResumes = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/api/resumes");
+      setResumes(response.data);
+    } catch (error) {
+      console.error("Error fetching resumes:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload a PDF file");
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size should be less than 5MB");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    try {
+      setUploading(true);
+      await api.post("/api/resumes/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success("Resume uploaded successfully!");
+      fetchResumes();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to upload resume");
+    } finally {
+      setUploading(false);
+      e.target.value = ""; // Reset file input
+    }
+  };
+
+  const handleSetActive = async (resumeId) => {
+    try {
+      await api.patch(`/api/resumes/${resumeId}/activate`);
+      toast.success("Active resume updated!");
+      fetchResumes();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to set active resume"
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+          <p className="text-gray-600">Manage your account and resumes</p>
+        </div>
+
+        {/* Profile Information */}
+        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Profile Information
+          </h2>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <div className="px-4 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900">
+                  {user?.name}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <div className="px-4 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900">
+                  {user?.email}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Role
+                </label>
+                <div className="px-4 py-2 bg-blue-50 border border-blue-200 rounded-md">
+                  <span className="text-blue-800 font-medium capitalize">
+                    {user?.role}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Member Since
+                </label>
+                <div className="px-4 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900">
+                  {new Date(user?.createdAt || Date.now()).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Resume Management (Job Seekers Only) */}
+        {isJobSeeker && (
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">My Resumes</h2>
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleResumeUpload}
+                  className="hidden"
+                  disabled={uploading}
+                />
+                <span className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-block">
+                  {uploading ? "Uploading..." : "+ Upload Resume"}
+                </span>
+              </label>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="mt-2 text-gray-600">Loading resumes...</p>
+              </div>
+            ) : resumes.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <div className="text-5xl mb-4">📄</div>
+                <p className="text-gray-600 mb-4">No resumes uploaded yet</p>
+                <p className="text-sm text-gray-500">
+                  Upload your resume to apply for jobs quickly
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {resumes.map((resume) => (
+                  <div
+                    key={resume._id}
+                    className={`border rounded-lg p-4 ${
+                      resume.isActive
+                        ? "border-green-500 bg-green-50"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {resume.fileName}
+                          </h3>
+                          {resume.isActive && (
+                            <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full">
+                              Active
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">
+                          Size: {(resume.fileSize / 1024).toFixed(2)} KB
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Uploaded:{" "}
+                          {new Date(resume.uploadedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <a
+                          href={resume.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                        >
+                          View
+                        </a>
+                        {!resume.isActive && (
+                          <button
+                            onClick={() => handleSetActive(resume._id)}
+                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+                          >
+                            Set Active
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">💡 Tips:</h4>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Upload your resume in PDF format (max 5MB)</li>
+                <li>
+                  • Set one resume as "Active" to use it for quick applications
+                </li>
+                <li>• Keep your resume updated with latest experience</li>
+                <li>
+                  • You can upload multiple versions for different job types
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Employer Info */}
+        {!isJobSeeker && (
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Employer Dashboard
+            </h2>
+            <p className="text-gray-600 mb-6">
+              As an employer, you can post jobs and manage applications.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-semibold text-blue-900 mb-2">Post Jobs</h3>
+                <p className="text-sm text-blue-700">
+                  Create job postings to find the best talent
+                </p>
+              </div>
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h3 className="font-semibold text-green-900 mb-2">
+                  Manage Applications
+                </h3>
+                <p className="text-sm text-green-700">
+                  Review and manage job applications
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Profile;

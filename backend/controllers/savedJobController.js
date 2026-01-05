@@ -24,8 +24,9 @@ export const saveJob = asyncHandler(async (req, res, next) => {
   }
 
   const savedJob = await SavedJob.create({ jobId, userId: req.user._id });
+  await savedJob.populate("jobId");
 
-  res.status(201).json({ message: "Job saved successfully", savedJob });
+  res.status(201).json(savedJob);
 });
 
 // @desc    Get all saved jobs
@@ -43,14 +44,15 @@ export const getSavedJobs = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/saved-jobs/:id
 // @access  Private (Job seeker only)
 export const unsaveJob = asyncHandler(async (req, res, next) => {
-  const savedJob = await SavedJob.findById(req.params.id);
+  const jobId = req.params.id;
+
+  const savedJob = await SavedJob.findOne({
+    jobId,
+    userId: req.user._id,
+  });
 
   if (!savedJob) {
     throw new AppError("Saved job not found", 404);
-  }
-
-  if (savedJob.userId.toString() !== req.user._id.toString()) {
-    throw new AppError("Not authorized to unsave this job", 403);
   }
 
   await savedJob.deleteOne();

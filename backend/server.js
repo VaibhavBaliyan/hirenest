@@ -23,35 +23,36 @@ const app = express();
 // Set security HTTP headers
 app.use(helmet());
 
+// CORS configuration
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.FRONTEND_URL
+      : ["http://localhost:5173", "http://localhost:3000"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 500, // Increased limit for development/testing
   message: "Too many requests from this IP, please try again later",
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === "OPTIONS",
 });
 app.use("/api", limiter);
 
 // Stricter rate limit for auth routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5, // 5 login/register attempts per 15 minutes
+  max: 20, // Increased limit for auth attempts
   message: "Too many authentication attempts, please try again later",
   skipSuccessfulRequests: true,
 });
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
-
-// CORS configuration
-const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.FRONTEND_URL
-      : "http://localhost:3000",
-  credentials: true,
-};
-app.use(cors(corsOptions));
 
 // Body parser
 app.use(express.json({ limit: "10kb" })); // Limit body size
