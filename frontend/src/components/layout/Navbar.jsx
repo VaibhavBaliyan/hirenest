@@ -59,6 +59,28 @@ function Navbar() {
                     </Link>
                   </>
                 )}
+                {user?.role === "employer" && (
+                  <>
+                    <Link
+                      to="/employer/dashboard"
+                      className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      to="/employer/jobs"
+                      className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                      My Jobs
+                    </Link>
+                    <Link
+                      to="/employer/company"
+                      className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                      My Company
+                    </Link>
+                  </>
+                )}
                 <Link
                   to="/profile"
                   className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
