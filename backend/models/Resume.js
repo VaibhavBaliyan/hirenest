@@ -21,6 +21,10 @@ const resumeSchema = new Schema(
     fileSize: {
       type: Number,
     },
+    cloudinaryId: {
+      type: String,
+      required: true,
+    },
     isActive: {
       type: Boolean,
       default: true,

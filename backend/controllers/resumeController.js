@@ -1,45 +1,96 @@
-import Resume from "../models/Resume.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/AppError.js";
+import cloudinary from "../config/cloudinary.js";
+import Resume from "../models/Resume.js";
 
-export const uploadResume = asyncHandler(async (req, res, next) => {
+// @desc    Upload resume
+// @route   POST /api/resumes/upload
+// @access  Private (Job Seeker only)
+export const uploadResumeFile = asyncHandler(async (req, res, next) => {
   if (!req.file) {
-    throw new AppError("Please upload a resume", 400);
+    throw new AppError("Please upload a PDF file", 400);
   }
 
+  // Deactivate other resumes if this is the first one, or user can set it active later
+  // For better UX, let's make the new one active by default and deactivate others
   await Resume.updateMany({ userId: req.user._id }, { isActive: false });
 
   const resume = await Resume.create({
     userId: req.user._id,
     fileName: req.file.originalname,
-    fileUrl: req.file.path,
+    fileUrl: req.file.path, // Cloudinary URL
     fileSize: req.file.size,
-    isActive: true,
+    cloudinaryId: req.file.filename,
+    isActive: true, // Make new resume active by default
   });
 
-  res.status(201).json({ message: "Resume uploaded successfully", resume });
+  res.status(201).json({
+    message: "Resume uploaded successfully",
+    resume,
+  });
 });
 
-export const getResume = asyncHandler(async (req, res, next) => {
+// @desc    Get user's resumes
+// @route   GET /api/resumes
+// @access  Private (Job Seeker only)
+export const getMyResumes = asyncHandler(async (req, res, next) => {
   const resumes = await Resume.find({ userId: req.user._id }).sort(
     "-uploadedAt"
   );
   res.json(resumes);
 });
 
-export const setActiveResume = asyncHandler(async (req, res, next) => {
-  const resume = await Resume.findById(req.params.id);
+// @desc    Delete resume
+// @route   DELETE /api/resumes/:id
+// @access  Private (Job Seeker only)
+export const deleteResume = asyncHandler(async (req, res, next) => {
+  const resume = await Resume.findOne({
+    _id: req.params.id,
+    userId: req.user._id,
+  });
 
   if (!resume) {
     throw new AppError("Resume not found", 404);
   }
 
-  if (resume.userId.toString() !== req.user._id.toString()) {
-    throw new AppError("Not authorized to update this resume", 403);
+  // Delete from Cloudinary
+  if (resume.cloudinaryId) {
+    // Determine resource_type from fileUrl (raw or image)
+    const resourceType = resume.fileUrl.includes("/raw/") ? "raw" : "image";
+
+    try {
+      await cloudinary.uploader.destroy(resume.cloudinaryId, {
+        resource_type: resourceType,
+      });
+    } catch (error) {
+      console.error("Cloudinary delete error:", error);
+      // Continue to delete from DB even if Cloudinary fails
+    }
   }
 
+  // Delete from MongoDB
+  await resume.deleteOne();
+
+  res.json({ message: "Resume deleted successfully" });
+});
+
+// @desc    Set active resume
+// @route   PATCH /api/resumes/:id/activate
+// @access  Private (Job Seeker only)
+export const setActiveResume = asyncHandler(async (req, res, next) => {
+  const resume = await Resume.findOne({
+    _id: req.params.id,
+    userId: req.user._id,
+  });
+
+  if (!resume) {
+    throw new AppError("Resume not found", 404);
+  }
+
+  // Deactivate all other resumes
   await Resume.updateMany({ userId: req.user._id }, { isActive: false });
 
+  // Activate this resume
   resume.isActive = true;
   await resume.save();
 

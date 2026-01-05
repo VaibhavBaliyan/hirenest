@@ -81,6 +81,17 @@ function Profile() {
     }
   };
 
+  const handleDeleteResume = async (resumeId) => {
+    if (!window.confirm("Are you sure you want to delete this resume?")) return;
+    try {
+      await api.delete(`/api/resumes/${resumeId}`);
+      toast.success("Resume deleted successfully");
+      fetchResumes();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete resume");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -217,12 +228,20 @@ function Profile() {
                           View
                         </a>
                         {!resume.isActive && (
-                          <button
-                            onClick={() => handleSetActive(resume._id)}
-                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
-                          >
-                            Set Active
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleSetActive(resume._id)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+                            >
+                              Set Active
+                            </button>
+                            <button
+                              onClick={() => handleDeleteResume(resume._id)}
+                              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
