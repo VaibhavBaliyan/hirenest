@@ -42,7 +42,20 @@ const ProtectedRoute = ({
   return children;
 };
 
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchSavedJobs } from "./redux/slices/savedJobSlice";
+
 function App() {
+  const dispatch = useDispatch();
+  const { isAuthenticated, isJobSeeker } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && isJobSeeker) {
+      dispatch(fetchSavedJobs());
+    }
+  }, [isAuthenticated, isJobSeeker, dispatch]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />

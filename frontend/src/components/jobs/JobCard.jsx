@@ -1,26 +1,15 @@
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  saveJob,
-  unsaveJob,
-  fetchSavedJobs,
-} from "../../redux/slices/savedJobSlice";
+import { saveJob, unsaveJob } from "../../redux/slices/savedJobSlice";
 import { useAuth } from "../../hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
-import { useEffect } from "react";
 
 function JobCard({ job }) {
   const dispatch = useDispatch();
   const { isAuthenticated, isJobSeeker } = useAuth();
   const { savedJobIds } = useSelector((state) => state.savedJobs);
   const isSaved = savedJobIds.includes(job._id);
-
-  useEffect(() => {
-    if (isAuthenticated && isJobSeeker) {
-      dispatch(fetchSavedJobs());
-    }
-  }, [dispatch, isAuthenticated, isJobSeeker]);
 
   const handleSaveToggle = async (e) => {
     e.preventDefault();
