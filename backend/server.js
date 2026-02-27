@@ -62,14 +62,14 @@ app.use(express.json({ limit: "10kb" })); // Limit body size
 app.use(
   mongoSanitize({
     replaceWith: "_",
-  })
+  }),
 );
 
 // Prevent parameter pollution
 app.use(
   hpp({
     whitelist: ["skills", "location", "jobType"], // Allow these params to appear multiple times
-  })
+  }),
 );
 
 // Routes
@@ -89,6 +89,14 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () =>
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-);
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () =>
+    console.log(
+      `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+    ),
+  );
+}
+
+// Export app for testing
+export default app;

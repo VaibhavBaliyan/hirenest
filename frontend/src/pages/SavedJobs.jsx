@@ -5,6 +5,8 @@ import { fetchSavedJobs, unsaveJob } from "../redux/slices/savedJobSlice";
 import { useAuth } from "../hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
+import { MapPin, DollarSign, Briefcase, Bookmark, X } from "lucide-react";
+import { Button, Card, Badge } from "../components/ui";
 
 function SavedJobs() {
   const dispatch = useDispatch();
@@ -35,9 +37,9 @@ function SavedJobs() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           <p className="mt-4 text-gray-600">Loading saved jobs...</p>
         </div>
       </div>
@@ -45,7 +47,7 @@ function SavedJobs() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -64,33 +66,39 @@ function SavedJobs() {
 
         {/* Saved Jobs List */}
         {savedJobs.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">🔖</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-              No Saved Jobs Yet
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Save jobs you're interested in to review them later
-            </p>
-            <button
-              onClick={() => navigate("/jobs")}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Browse Jobs
-            </button>
-          </div>
+          <Card padding="xl" className="text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-20 h-20 mx-auto mb-6 bg-primary-100 rounded-full flex items-center justify-center">
+                <Bookmark size={40} className="text-primary-600" />
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                No Saved Jobs Yet
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Save jobs you're interested in to review them later
+              </p>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => navigate("/jobs")}
+              >
+                Browse Jobs
+              </Button>
+            </div>
+          </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {savedJobs.map((saved) => (
-              <div
+              <Card
                 key={saved._id}
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
+                padding="lg"
+                className="hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <h3
                       onClick={() => navigate(`/jobs/${saved.jobId._id}`)}
-                      className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer"
+                      className="text-xl font-semibold text-gray-900 mb-2 hover:text-primary-600 transition-colors"
                     >
                       {saved.jobId.title}
                     </h3>
@@ -108,17 +116,20 @@ function SavedJobs() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                  <Badge variant="primary">
+                    <Briefcase size={14} className="mr-1" />
                     {saved.jobId.jobType}
-                  </span>
-                  <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full">
-                    📍 {saved.jobId.location}
-                  </span>
+                  </Badge>
+                  <Badge variant="secondary">
+                    <MapPin size={14} className="mr-1" />
+                    {saved.jobId.location}
+                  </Badge>
                   {saved.jobId.salary?.min && saved.jobId.salary?.max && (
-                    <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                      💰 ₹{saved.jobId.salary.min.toLocaleString()} - ₹
+                    <Badge variant="success">
+                      <DollarSign size={14} className="mr-1" />₹
+                      {saved.jobId.salary.min.toLocaleString()} - ₹
                       {saved.jobId.salary.max.toLocaleString()}
-                    </span>
+                    </Badge>
                   )}
                 </div>
 
@@ -130,7 +141,7 @@ function SavedJobs() {
                   {saved.jobId.skills?.slice(0, 3).map((skill, index) => (
                     <span
                       key={index}
-                      className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded"
+                      className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded"
                     >
                       {skill}
                     </span>
@@ -142,7 +153,7 @@ function SavedJobs() {
                   )}
                 </div>
 
-                <div className="flex justify-between items-center pt-4 border-t">
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                   <span className="text-sm text-gray-500">
                     Saved{" "}
                     {formatDistanceToNow(new Date(saved.savedAt), {
@@ -150,21 +161,25 @@ function SavedJobs() {
                     })}
                   </span>
                   <div className="flex gap-2">
-                    <button
+                    <Button
+                      variant="primary"
+                      size="sm"
                       onClick={() => navigate(`/jobs/${saved.jobId._id}`)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
                     >
                       View Details
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleUnsave(saved.jobId._id)}
-                      className="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-sm"
+                      className="text-red-600 border-red-300 hover:bg-red-50"
                     >
-                      Remove
-                    </button>
+                      <X size={16} />
+                      <span className="ml-1">Remove</span>
+                    </Button>
                   </div>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}

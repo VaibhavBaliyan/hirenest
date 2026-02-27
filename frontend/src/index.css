@@ -1,1 +1,30 @@
+/* Tailwind v4 Theme Configuration */
 @import "tailwindcss";
+
+@theme {
+  /* Primary Purple Color Palette (Twitch Purple) */
+  --color-primary-50: #faf5ff;
+  --color-primary-100: #f3e8ff;
+  --color-primary-200: #e9d5ff;
+  --color-primary-300: #d8b4fe;
+  --color-primary-400: #c084fc;
+  --color-primary-500: #9146ff; /* Twitch Purple - Main Brand Color */
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+  --color-primary-800: #5b21b6;
+  --color-primary-900: #4c1d95;
+
+  /* Semantic Colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Purple Shadows */
+  --shadow-purple: 0 10px 40px rgba(145, 70, 255, 0.3);
+  --shadow-purple-sm: 0 4px 20px rgba(145, 70, 255, 0.2);
+}
+
+/* Import Design System */
+@import "./styles/tokens.css";
+@import "./styles/animations.css";

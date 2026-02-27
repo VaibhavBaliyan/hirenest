@@ -3,6 +3,23 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 import { formatDistanceToNow } from "date-fns";
+import { ChevronLeft, Users, Mail, FileText } from "lucide-react";
+import { Button, Badge, Card } from "../../components/ui";
+
+const TAB_BASE = "px-4 py-2 rounded-md font-medium text-sm transition-colors";
+const TAB_ACTIVE = TAB_BASE + " bg-primary-600 text-white";
+const TAB_INACTIVE = TAB_BASE + " bg-white text-gray-700 hover:bg-gray-100";
+
+function getStatusBadgeVariant(status) {
+  switch (status) {
+    case "shortlisted":
+      return "primary";
+    case "rejected":
+      return "danger";
+    default:
+      return "secondary";
+  }
+}
 
 function ViewApplicants() {
   const { jobId } = useParams();
@@ -18,16 +35,14 @@ function ViewApplicants() {
     try {
       setLoading(true);
       const response = await api.get(
-        `/api/applications/jobs/${jobId}/applicants`
+        `/api/applications/jobs/${jobId}/applicants`,
       );
       setApplicants(response.data);
-
-      // Fetch job details
       const jobResponse = await api.get(`/api/jobs/${jobId}`);
       setJob(jobResponse.data);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to fetch applicants"
+        error.response?.data?.message || "Failed to fetch applicants",
       );
       navigate("/employer/jobs");
     } finally {
@@ -46,12 +61,10 @@ function ViewApplicants() {
         status: newStatus,
       });
       toast.success(`Application ${newStatus} successfully!`);
-
-      // Update local state
       setApplicants(
         applicants.map((app) =>
-          app._id === applicationId ? { ...app, status: newStatus } : app
-        )
+          app._id === applicationId ? { ...app, status: newStatus } : app,
+        ),
       );
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update status");
@@ -65,30 +78,28 @@ function ViewApplicants() {
       toast.error("Please select at least one applicant");
       return;
     }
-
     if (
       !window.confirm(
-        `Are you sure you want to ${action} ${selectedApplicants.length} applicant(s)?`
+        `Are you sure you want to ${action} ${selectedApplicants.length} applicant(s)?`,
       )
     ) {
       return;
     }
-
     try {
       setUpdatingStatus("bulk");
       await Promise.all(
         selectedApplicants.map((id) =>
-          api.patch(`/api/applications/${id}/status`, { status: action })
-        )
+          api.patch(`/api/applications/${id}/status`, { status: action }),
+        ),
       );
       toast.success(
-        `${selectedApplicants.length} applicant(s) ${action} successfully!`
+        `${selectedApplicants.length} applicant(s) ${action} successfully!`,
       );
       setSelectedApplicants([]);
       fetchApplicants();
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to update applicants"
+        error.response?.data?.message || "Failed to update applicants",
       );
     } finally {
       setUpdatingStatus(null);
@@ -97,7 +108,7 @@ function ViewApplicants() {
 
   const toggleSelectApplicant = (id) => {
     setSelectedApplicants((prev) =>
-      prev.includes(id) ? prev.filter((appId) => appId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((appId) => appId !== id) : [...prev, id],
     );
   };
 
@@ -109,19 +120,6 @@ function ViewApplicants() {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "applied":
-        return "bg-blue-100 text-blue-800";
-      case "shortlisted":
-        return "bg-yellow-100 text-yellow-800";
-      case "rejected":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   const filteredApplicants = applicants.filter((app) => {
     if (filterStatus === "all") return true;
     return app.status === filterStatus;
@@ -129,9 +127,9 @@ function ViewApplicants() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           <p className="mt-4 text-gray-600">Loading applicants...</p>
         </div>
       </div>
@@ -139,18 +137,20 @@ function ViewApplicants() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate("/employer/jobs")}
-            className="text-blue-600 hover:text-blue-800 mb-4 flex items-center gap-2"
+            className="flex items-center gap-1 text-primary-600 hover:text-primary-700 font-medium mb-4"
           >
-            ← Back to My Jobs
+            <ChevronLeft size={18} />
+            Back to My Jobs
           </button>
           <h1 className="text-3xl font-bold text-gray-900">{job?.title}</h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 mt-1 flex items-center gap-2">
+            <Users size={18} />
             {applicants.length}{" "}
             {applicants.length === 1 ? "Applicant" : "Applicants"}
           </p>
@@ -158,46 +158,34 @@ function ViewApplicants() {
 
         {/* Filter Tabs */}
         {applicants.length > 0 && (
-          <div className="mb-6 flex gap-2">
+          <div className="mb-6 flex gap-2 flex-wrap">
             <button
               onClick={() => setFilterStatus("all")}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-                filterStatus === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
+              className={filterStatus === "all" ? TAB_ACTIVE : TAB_INACTIVE}
             >
               All ({applicants.length})
             </button>
             <button
               onClick={() => setFilterStatus("applied")}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-                filterStatus === "applied"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
+              className={filterStatus === "applied" ? TAB_ACTIVE : TAB_INACTIVE}
             >
               Applied ({applicants.filter((a) => a.status === "applied").length}
               )
             </button>
             <button
               onClick={() => setFilterStatus("shortlisted")}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-                filterStatus === "shortlisted"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
+              className={
+                filterStatus === "shortlisted" ? TAB_ACTIVE : TAB_INACTIVE
+              }
             >
               Shortlisted (
               {applicants.filter((a) => a.status === "shortlisted").length})
             </button>
             <button
               onClick={() => setFilterStatus("rejected")}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-                filterStatus === "rejected"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
+              className={
+                filterStatus === "rejected" ? TAB_ACTIVE : TAB_INACTIVE
+              }
             >
               Rejected (
               {applicants.filter((a) => a.status === "rejected").length})
@@ -205,35 +193,38 @@ function ViewApplicants() {
           </div>
         )}
 
-        {/* Bulk Actions */}
+        {/* Bulk Actions Bar */}
         {selectedApplicants.length > 0 && (
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-md p-4 flex justify-between items-center">
-            <span className="text-blue-900 font-medium">
+          <div className="mb-6 bg-primary-50 border border-primary-200 rounded-lg p-4 flex justify-between items-center">
+            <span className="text-primary-900 font-medium">
               {selectedApplicants.length} applicant(s) selected
             </span>
             <div className="flex gap-3">
-              <button
-                onClick={() => handleBulkAction("shortlisted")}
+              <Button
+                variant="primary"
+                size="sm"
                 disabled={updatingStatus === "bulk"}
-                className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium text-sm disabled:opacity-50"
+                onClick={() => handleBulkAction("shortlisted")}
               >
                 Shortlist Selected
-              </button>
-              <button
-                onClick={() => handleBulkAction("rejected")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 disabled={updatingStatus === "bulk"}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium text-sm disabled:opacity-50"
+                onClick={() => handleBulkAction("rejected")}
+                className="border-red-300 text-red-700 hover:bg-red-50"
               >
                 Reject Selected
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
-        {/* Select All Checkbox */}
+        {/* Select All */}
         {filteredApplicants.length > 0 && (
           <div className="mb-4">
-            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={
@@ -241,7 +232,7 @@ function ViewApplicants() {
                   filteredApplicants.length > 0
                 }
                 onChange={toggleSelectAll}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
               <span className="font-medium">Select All</span>
             </label>
@@ -250,33 +241,34 @@ function ViewApplicants() {
 
         {/* Applicants List */}
         {filteredApplicants.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📭</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-              {filterStatus === "all"
-                ? "No Applications Yet"
-                : `No ${filterStatus} Applicants`}
-            </h2>
-            <p className="text-gray-600">
-              {filterStatus === "all"
-                ? "Applications will appear here once job seekers apply to this position"
-                : `You don't have any ${filterStatus} applicants at the moment`}
-            </p>
-          </div>
+          <Card padding="lg">
+            <div className="py-12 text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center">
+                <Users className="text-primary-600" size={40} />
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                {filterStatus === "all"
+                  ? "No Applications Yet"
+                  : `No ${filterStatus} Applicants`}
+              </h2>
+              <p className="text-gray-600">
+                {filterStatus === "all"
+                  ? "Applications will appear here once job seekers apply to this position"
+                  : `You don't have any ${filterStatus} applicants at the moment`}
+              </p>
+            </div>
+          </Card>
         ) : (
           <div className="space-y-4">
             {filteredApplicants.map((application) => (
-              <div
-                key={application._id}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
+              <Card key={application._id} padding="lg">
                 <div className="flex items-start gap-4">
                   {/* Checkbox */}
                   <input
                     type="checkbox"
                     checked={selectedApplicants.includes(application._id)}
                     onChange={() => toggleSelectApplicant(application._id)}
-                    className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                    className="mt-1 w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                   />
 
                   <div className="flex-1">
@@ -287,44 +279,47 @@ function ViewApplicants() {
                           <h3 className="text-xl font-semibold text-gray-900">
                             {application.applicantId?.name || "Anonymous"}
                           </h3>
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                              application.status
-                            )}`}
+                          <Badge
+                            variant={getStatusBadgeVariant(application.status)}
                           >
                             {application.status.toUpperCase()}
-                          </span>
+                          </Badge>
                         </div>
-                        <p className="text-gray-600 text-sm mb-1">
-                          📧 {application.applicantId?.email || "No email"}
+                        <p className="text-gray-600 text-sm mb-1 flex items-center gap-1">
+                          <Mail size={14} />
+                          {application.applicantId?.email || "No email"}
                         </p>
                         <p className="text-gray-500 text-sm">
                           Applied{" "}
                           {formatDistanceToNow(
                             new Date(application.appliedAt),
-                            { addSuffix: true }
+                            {
+                              addSuffix: true,
+                            },
                           )}
                         </p>
                       </div>
 
                       {/* Resume Link */}
                       {application.resumeUrl && (
-                        <a
-                          href={application.resumeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 font-medium text-sm"
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          leftIcon={<FileText size={15} />}
+                          onClick={() =>
+                            window.open(application.resumeUrl, "_blank")
+                          }
                         >
-                          📄 View Resume
-                        </a>
+                          View Resume
+                        </Button>
                       )}
                     </div>
 
                     {/* Cover Letter */}
                     {application.coverLetter && (
-                      <div className="mb-4 p-4 bg-gray-50 rounded-md">
+                      <div className="mb-4 p-4 bg-gray-50 rounded-md border-l-4 border-primary-400">
                         <h4 className="text-sm font-medium text-gray-700 mb-2">
-                          Cover Letter:
+                          Cover Letter
                         </h4>
                         <p className="text-gray-700 text-sm whitespace-pre-wrap">
                           {application.coverLetter}
@@ -335,51 +330,55 @@ function ViewApplicants() {
                     {/* Action Buttons */}
                     <div className="flex gap-3 pt-4 border-t border-gray-100">
                       {application.status !== "shortlisted" && (
-                        <button
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          disabled={updatingStatus === application._id}
                           onClick={() =>
                             updateApplicationStatus(
                               application._id,
-                              "shortlisted"
+                              "shortlisted",
                             )
                           }
-                          disabled={updatingStatus === application._id}
-                          className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium text-sm disabled:opacity-50"
                         >
                           {updatingStatus === application._id
                             ? "Updating..."
                             : "Shortlist"}
-                        </button>
+                        </Button>
                       )}
                       {application.status !== "rejected" && (
-                        <button
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={updatingStatus === application._id}
                           onClick={() =>
                             updateApplicationStatus(application._id, "rejected")
                           }
-                          disabled={updatingStatus === application._id}
-                          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium text-sm disabled:opacity-50"
+                          className="border-red-300 text-red-700 hover:bg-red-50"
                         >
                           {updatingStatus === application._id
                             ? "Updating..."
                             : "Reject"}
-                        </button>
+                        </Button>
                       )}
                       {application.status === "rejected" && (
-                        <button
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={updatingStatus === application._id}
                           onClick={() =>
                             updateApplicationStatus(application._id, "applied")
                           }
-                          disabled={updatingStatus === application._id}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium text-sm disabled:opacity-50"
                         >
                           {updatingStatus === application._id
                             ? "Updating..."
                             : "Revert to Applied"}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </div>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}

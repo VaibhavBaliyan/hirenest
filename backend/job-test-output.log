@@ -1,0 +1,401 @@
+
+> backend@1.0.0 test
+> cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand jobs.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (8) from .env.test -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    ⏭  Skipping DB connection in test mode
+
+      at log (config/db.js:8:13)
+
+(node:3240) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+  console.log
+    ✅ Test database connected
+
+      at Object.log (__tests__/setup.js:17:13)
+
+  console.log
+    ✅ Test database disconnected
+
+      at Object.log (__tests__/setup.js:39:11)
+
+FAIL __tests__/jobs.test.js (8.407 s)
+  Job API
+    POST /api/jobs
+      × should create a job by employer with company (611 ms)
+      × should reject job creation by jobseeker (369 ms)
+      × should reject job creation without company (584 ms)
+    GET /api/jobs
+      × should get all active jobs (594 ms)
+      × should filter jobs by location (633 ms)
+      × should filter jobs by job type (435 ms)
+    GET /api/jobs/:id
+      × should get single job by ID (439 ms)
+      √ should return 404 for non-existent job (251 ms)
+    PUT /api/jobs/:id
+      × should update own job (287 ms)
+      × should reject update of other user's job (310 ms)
+    DELETE /api/jobs/:id
+      × should delete own job (soft delete) (325 ms)
+      × should reject deletion of other user's job (403 ms)
+    PATCH /api/jobs/:id/close
+      × should close/reopen job (512 ms)
+      × should reject closing already closed job (460 ms)
+
+  ● Job API › POST /api/jobs › should create a job by employer with company
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:13:44)
+
+  ● Job API › POST /api/jobs › should reject job creation by jobseeker
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 403
+
+    [0m [90m 53 |[39m         [33m.[39msend(jobData)[33m;[39m
+     [90m 54 |[39m
+    [31m[1m>[22m[39m[90m 55 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m400[39m)[33m;[39m
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 56 |[39m       expect(res[33m.[39mbody[33m.[39mmessage)[33m.[39mtoMatch([35m/company profile/i[39m)[33m;[39m
+     [90m 57 |[39m     })[33m;[39m
+     [90m 58 |[39m[0m
+
+      at Object.toBe (__tests__/jobs.test.js:55:30)
+
+  ● Job API › POST /api/jobs › should reject job creation without company
+
+    TypeError: expect(received).toMatch(expected)
+
+    Matcher error: received value must be a string
+
+    Received has value: undefined
+
+    [0m [90m 73 |[39m
+     [90m 74 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m400[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 75 |[39m       expect(res[33m.[39mbody[33m.[39mmessage)[33m.[39mtoMatch([35m/company profile first/i[39m)[33m;[39m
+     [90m    |[39m                                [31m[1m^[22m[39m
+     [90m 76 |[39m     })[33m;[39m
+     [90m 77 |[39m   })[33m;[39m
+     [90m 78 |[39m[0m
+
+      at Object.toMatch (__tests__/jobs.test.js:75:32)
+
+  ● Job API › GET /api/jobs › should get all active jobs
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:82:37)
+
+  ● Job API › GET /api/jobs › should filter jobs by location
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:82:37)
+
+  ● Job API › GET /api/jobs › should filter jobs by job type
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:82:37)
+
+  ● Job API › GET /api/jobs/:id › should get single job by ID
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:134:37)
+
+  ● Job API › PUT /api/jobs/:id › should update own job
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:156:44)
+
+  ● Job API › PUT /api/jobs/:id › should reject update of other user's job
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:177:9)
+
+  ● Job API › DELETE /api/jobs/:id › should delete own job (soft delete)
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:202:44)
+
+  ● Job API › DELETE /api/jobs/:id › should reject deletion of other user's job
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:220:9)
+
+  ● Job API › PATCH /api/jobs/:id/close › should close/reopen job
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:244:44)
+
+  ● Job API › PATCH /api/jobs/:id/close › should reject closing already closed job
+
+    ValidationError: Company validation failed: companyName: Path `companyName` is required.
+
+    [0m [90m 65 |[39m   }[33m;[39m
+     [90m 66 |[39m
+    [31m[1m>[22m[39m[90m 67 |[39m   [36mconst[39m company [33m=[39m [36mawait[39m [33mCompany[39m[33m.[39mcreate({
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 68 |[39m     [33m...[39mdefaultCompany[33m,[39m
+     [90m 69 |[39m     [33m...[39mcompanyOverrides[33m,[39m
+     [90m 70 |[39m   })[33m;[39m[0m
+
+      at model.Document.invalidate (node_modules/mongoose/lib/document.js:3379:32)
+      at validatePath (node_modules/mongoose/lib/document.js:3154:13)
+          at async Promise.all (index 0)
+      at model.$__validate (node_modules/mongoose/lib/document.js:3095:3)
+      at model.validate (node_modules/mongoose/lib/document.js:2672:5)
+      at model.validateBeforeSave (node_modules/mongoose/lib/plugins/validateBeforeSave.js:34:7)
+      at Kareem.execPre (node_modules/kareem/index.js:65:24)
+      at model.$__save (node_modules/mongoose/lib/model.js:369:5)
+      at model.save (node_modules/mongoose/lib/model.js:609:5)
+      at node_modules/mongoose/lib/model.js:2714:9
+          at async Promise.all (index 0)
+      at Function.create (node_modules/mongoose/lib/model.js:2699:11)
+      at createTestEmployer (__tests__/helpers.js:67:19)
+      at Object.<anonymous> (__tests__/jobs.test.js:259:44)
+
+Test Suites: 1 failed, 1 total
+Tests:       13 failed, 1 passed, 14 total
+Snapshots:   0 total
+Time:        8.492 s, estimated 10 s
+Ran all test suites matching jobs.test.js.

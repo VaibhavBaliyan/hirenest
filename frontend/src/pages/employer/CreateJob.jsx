@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
+import { Button } from "../../components/ui";
 
 function CreateJob() {
   const navigate = useNavigate();
@@ -66,13 +67,13 @@ function CreateJob() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           {/* Header */}
-          <div className="bg-blue-600 px-6 py-4">
+          <div className="bg-linear-to-r from-primary-600 to-purple-600 px-6 py-4">
             <h2 className="text-2xl font-bold text-white">Post a New Job</h2>
-            <p className="text-blue-100 text-sm mt-1">
+            <p className="text-primary-100 text-sm mt-1">
               Fill in the details to create a job listing
             </p>
           </div>
@@ -96,7 +97,7 @@ function CreateJob() {
                 maxLength={100}
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="e.g. Senior React Developer"
               />
             </div>
@@ -118,7 +119,7 @@ function CreateJob() {
                 rows={6}
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Describe the role, responsibilities, and requirements..."
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -142,7 +143,7 @@ function CreateJob() {
                   required
                   value={formData.location}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="e.g. Bangalore, India"
                 />
               </div>
@@ -160,7 +161,7 @@ function CreateJob() {
                   required
                   value={formData.jobType}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="full-time">Full-time</option>
                   <option value="part-time">Part-time</option>
@@ -184,7 +185,7 @@ function CreateJob() {
                     min="0"
                     value={formData.salaryMin}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Min (e.g. 500000)"
                   />
                   <p className="text-xs text-gray-500 mt-1">Minimum</p>
@@ -197,7 +198,7 @@ function CreateJob() {
                     min="0"
                     value={formData.salaryMax}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Max (e.g. 1000000)"
                   />
                   <p className="text-xs text-gray-500 mt-1">Maximum</p>
@@ -219,7 +220,7 @@ function CreateJob() {
                     min="0"
                     value={formData.experienceMin}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Min (e.g. 2)"
                   />
                   <p className="text-xs text-gray-500 mt-1">Minimum years</p>
@@ -232,7 +233,7 @@ function CreateJob() {
                     min="0"
                     value={formData.experienceMax}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Max (e.g. 5)"
                   />
                   <p className="text-xs text-gray-500 mt-1">Maximum years</p>
@@ -255,7 +256,7 @@ function CreateJob() {
                 required
                 value={formData.skills}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="e.g. React, Node.js, MongoDB, TypeScript (comma-separated)"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -265,24 +266,24 @@ function CreateJob() {
 
             {/* Submit Buttons */}
             <div className="flex gap-4 pt-4">
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="md"
                 onClick={() => navigate("/employer/dashboard")}
-                className="flex-1 px-6 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                fullWidth
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
+                variant="primary"
+                size="md"
                 disabled={loading}
-                className={`flex-1 px-6 py-3 rounded-md text-white font-medium transition-colors ${
-                  loading
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
+                fullWidth
               >
                 {loading ? "Posting..." : "Post Job"}
-              </button>
+              </Button>
             </div>
           </form>
         </div>

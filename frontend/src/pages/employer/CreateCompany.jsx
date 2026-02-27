@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { registerCompany } from "../../redux/slices/companySlice";
 import toast from "react-hot-toast";
+import { Building2 } from "lucide-react";
+import { Button, Card, Input } from "../../components/ui";
 
 function CreateCompany() {
   const dispatch = useDispatch();
@@ -32,8 +34,13 @@ function CreateCompany() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+            <Building2 className="text-primary-600" size={32} />
+          </div>
+        </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Create Company Profile
         </h2>
@@ -43,103 +50,92 @@ function CreateCompany() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <Card padding="lg">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="companyName"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Company Name *
               </label>
-              <div className="mt-1">
-                <input
-                  id="companyName"
-                  name="companyName"
-                  type="text"
-                  required
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="e.g. Acme Corp"
-                />
-              </div>
+              <Input
+                id="companyName"
+                name="companyName"
+                type="text"
+                required
+                value={formData.companyName}
+                onChange={handleChange}
+                placeholder="e.g. Acme Corp"
+              />
             </div>
 
             <div>
               <label
                 htmlFor="website"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Website
               </label>
-              <div className="mt-1">
-                <input
-                  id="website"
-                  name="website"
-                  type="url"
-                  value={formData.website}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="https://example.com"
-                />
-              </div>
+              <Input
+                id="website"
+                name="website"
+                type="url"
+                value={formData.website}
+                onChange={handleChange}
+                placeholder="https://example.com"
+              />
             </div>
 
             <div>
               <label
                 htmlFor="location"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Location
               </label>
-              <div className="mt-1">
-                <input
-                  id="location"
-                  name="location"
-                  type="text"
-                  value={formData.location}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="e.g. San Francisco, CA"
-                />
-              </div>
+              <Input
+                id="location"
+                name="location"
+                type="text"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="e.g. San Francisco, CA"
+              />
             </div>
 
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Description (Max 1000 characters)
               </label>
-              <div className="mt-1">
-                <textarea
-                  id="description"
-                  name="description"
-                  rows={4}
-                  maxLength={1000}
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Briefly describe what your company does..."
-                />
-              </div>
+              <textarea
+                id="description"
+                name="description"
+                rows={4}
+                maxLength={1000}
+                value={formData.description}
+                onChange={handleChange}
+                className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors sm:text-sm"
+                placeholder="Briefly describe what your company does..."
+              />
             </div>
 
             <div>
-              <button
+              <Button
                 type="submit"
+                variant="primary"
+                size="md"
                 disabled={loading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                fullWidth
               >
                 {loading ? "Creating..." : "Create Profile"}
-              </button>
+              </Button>
             </div>
           </form>
-        </div>
+        </Card>
       </div>
     </div>
   );

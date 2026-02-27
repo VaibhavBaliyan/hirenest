@@ -1,0 +1,48 @@
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\App.jsx
+  2:27  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\components\animations\TypingHero.jsx
+   1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  50:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  48 |     } else if (isDeleting && currentText === "") {
+  49 |       // Finished deleting, move to next phrase
+> 50 |       setIsDeleting(false);
+     |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  51 |       setCurrentPhraseIndex((prev) => (prev + 1) % phrases.length);
+  52 |     } else if (!isDeleting) {
+  53 |       // Typing  react-hooks/set-state-in-effect
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\components\jobs\JobCard.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\components\ui\Button.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\components\ui\Spinner.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\pages\Home.jsx
+    2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  332:28  error  'Icon' is defined but never used                                               no-unused-vars
+  409:34  error  'Icon' is defined but never used                                               no-unused-vars
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\pages\JobDetails.jsx
+  4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\pages\Jobs.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Vaibhav\Desktop\My Projects\hirenest\frontend\src\pages\employer\CompanyProfile.jsx
+  38:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+✖ 12 problems (11 errors, 1 warning)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

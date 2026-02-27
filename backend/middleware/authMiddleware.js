@@ -14,6 +14,13 @@ export const protect = async (req, res, next) => {
 
       req.user = await User.findById(decoded.id).select("-password");
 
+      // Security: Check if user still exists (not deleted)
+      if (!req.user) {
+        return res.status(401).json({
+          message: "User no longer exists. Please login again.",
+        });
+      }
+
       next();
     } catch (error) {
       return res.status(401).json({ message: "Not authorized, token failed" });

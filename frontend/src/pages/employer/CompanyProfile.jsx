@@ -1,40 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchMyCompany, updateCompany } from "../../redux/slices/companySlice";
 import toast from "react-hot-toast";
+import { Building2, Globe, MapPin, Edit2 } from "lucide-react";
+import { Button } from "../../components/ui";
 
 function CompanyProfile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { company, loading, error } = useSelector((state) => state.company);
 
-  const [formData, setFormData] = useState({
-    companyName: "",
-    website: "",
-    location: "",
-    description: "",
-    logo: "",
-  });
+  // Derive initial form values from company — no effect needed
+  const initialFormData = useMemo(
+    () => ({
+      companyName: company?.companyName || "",
+      website: company?.website || "",
+      location: company?.location || "",
+      description: company?.description || "",
+      logo: company?.logo || "",
+    }),
+    [company],
+  );
 
+  const [formData, setFormData] = useState(initialFormData);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Sync form with company data whenever it changes (e.g. after fetch)
+  useEffect(() => {
+    setFormData(initialFormData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [company]); // intentionally depends on company, not the memoized object
 
   useEffect(() => {
     dispatch(fetchMyCompany());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (company) {
-      setFormData({
-        companyName: company.companyName || "",
-        website: company.website || "",
-        location: company.location || "",
-        description: company.description || "",
-        logo: company.logo || "",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [company]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,9 +53,9 @@ function CompanyProfile() {
 
   if (loading && !company) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           <p className="mt-4 text-gray-600">Loading profile...</p>
         </div>
       </div>
@@ -66,41 +66,47 @@ function CompanyProfile() {
   // However, check if error indicates 404
   if (!loading && !company && error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 flex flex-col items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <span className="text-6xl mb-4 block">🏢</span>
+          <div className="w-20 h-20 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center">
+            <Building2 className="text-primary-600" size={40} />
+          </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             No Company Profile Found
           </h2>
           <p className="text-gray-600 mb-6">
             You haven't set up your company profile yet.
           </p>
-          <button
+          <Button
+            variant="primary"
+            size="md"
             onClick={() => navigate("/employer/setup-company")}
-            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 font-medium"
           >
             Create Company Profile
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           {/* Header / Banner */}
-          <div className="bg-blue-600 px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
+          <div className="bg-linear-to-r from-primary-600 to-purple-600 px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
             <h3 className="text-lg leading-6 font-medium text-white">
               Company Details
             </h3>
-            <button
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<Edit2 size={16} />}
               onClick={() => setIsEditing(!isEditing)}
-              className="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors"
+              className="bg-white text-primary-600 hover:bg-primary-50"
             >
               {isEditing ? "Cancel Editing" : "Edit Profile"}
-            </button>
+            </Button>
           </div>
 
           {/* Content */}
@@ -122,7 +128,7 @@ function CompanyProfile() {
                       required
                       value={formData.companyName}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     />
                   </div>
                 </div>
@@ -186,13 +192,14 @@ function CompanyProfile() {
                 </div>
 
                 <div className="flex justify-end gap-3">
-                  <button
+                  <Button
                     type="submit"
+                    variant="primary"
+                    size="md"
                     disabled={loading}
-                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     {loading ? "Saving..." : "Save Changes"}
-                  </button>
+                  </Button>
                 </div>
               </form>
             ) : (
@@ -227,9 +234,10 @@ function CompanyProfile() {
                       href={company.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                      className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
                     >
-                      Visit Website 🔗
+                      <Globe size={16} />
+                      Visit Website
                     </a>
                   )}
                 </div>

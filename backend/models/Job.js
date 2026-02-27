@@ -36,7 +36,7 @@ const jobSchema = new Schema(
     jobType: {
       type: String,
       required: true,
-      enum: ["full-time", "part-time", "internship", "contract"],
+      enum: ["full-time", "part-time", "internship", "contract", "remote"],
     },
     salary: {
       min: { type: Number, min: 0 },
@@ -81,7 +81,7 @@ const jobSchema = new Schema(
       default: "active",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 jobSchema.index({ employerId: 1 });

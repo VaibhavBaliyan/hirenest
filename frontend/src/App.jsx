@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "./hooks/useAuth";
 import Navbar from "./components/layout/Navbar";
 
@@ -18,6 +19,7 @@ import CreateJob from "./pages/employer/CreateJob";
 import MyJobs from "./pages/employer/MyJobs";
 import ViewApplicants from "./pages/employer/ViewApplicants";
 import EditJob from "./pages/employer/EditJob";
+import ComponentShowcase from "./pages/ComponentShowcase";
 
 // Protected Route Component
 const ProtectedRoute = ({
@@ -49,6 +51,7 @@ import { fetchSavedJobs } from "./redux/slices/savedJobSlice";
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, isJobSeeker } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     if (isAuthenticated && isJobSeeker) {
@@ -59,97 +62,108 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/jobs" element={<Jobs />} />
-        <Route path="/jobs/:id" element={<JobDetails />} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+        >
+          <Routes location={location}>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/jobs/:id" element={<JobDetails />} />
+            <Route path="/components" element={<ComponentShowcase />} />
 
-        {/* Protected Routes - We'll add more later */}
-        <Route
-          path="/my-applications"
-          element={
-            <ProtectedRoute jobSeekerOnly={true}>
-              <MyApplications />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/saved-jobs"
-          element={
-            <ProtectedRoute jobSeekerOnly={true}>
-              <SavedJobs />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        {/* Employer Routes */}
-        <Route
-          path="/employer/dashboard"
-          element={
-            <ProtectedRoute employerOnly={true}>
-              <EmployerDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer/setup-company"
-          element={
-            <ProtectedRoute employerOnly={true}>
-              <CreateCompany />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer/company"
-          element={
-            <ProtectedRoute employerOnly={true}>
-              <CompanyProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer/jobs/create"
-          element={
-            <ProtectedRoute employerOnly={true}>
-              <CreateJob />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer/jobs"
-          element={
-            <ProtectedRoute employerOnly={true}>
-              <MyJobs />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer/jobs/:jobId/applicants"
-          element={
-            <ProtectedRoute employerOnly={true}>
-              <ViewApplicants />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer/jobs/:jobId/edit"
-          element={
-            <ProtectedRoute employerOnly={true}>
-              <EditJob />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+            {/* Protected Routes - We'll add more later */}
+            <Route
+              path="/my-applications"
+              element={
+                <ProtectedRoute jobSeekerOnly={true}>
+                  <MyApplications />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/saved-jobs"
+              element={
+                <ProtectedRoute jobSeekerOnly={true}>
+                  <SavedJobs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            {/* Employer Routes */}
+            <Route
+              path="/employer/dashboard"
+              element={
+                <ProtectedRoute employerOnly={true}>
+                  <EmployerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employer/setup-company"
+              element={
+                <ProtectedRoute employerOnly={true}>
+                  <CreateCompany />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employer/company"
+              element={
+                <ProtectedRoute employerOnly={true}>
+                  <CompanyProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employer/jobs/create"
+              element={
+                <ProtectedRoute employerOnly={true}>
+                  <CreateJob />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employer/jobs"
+              element={
+                <ProtectedRoute employerOnly={true}>
+                  <MyJobs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employer/jobs/:jobId/applicants"
+              element={
+                <ProtectedRoute employerOnly={true}>
+                  <ViewApplicants />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employer/jobs/:jobId/edit"
+              element={
+                <ProtectedRoute employerOnly={true}>
+                  <EditJob />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

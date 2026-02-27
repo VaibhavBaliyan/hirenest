@@ -25,7 +25,7 @@ export const validateRegister = [
     .withMessage("Password must be at least 6 characters long")
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage(
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
     ),
 
   body("role")
@@ -34,7 +34,7 @@ export const validateRegister = [
     .withMessage("Role must be either employer or jobseeker"),
 
   body("phone")
-    .optional()
+    .optional({ checkFalsy: true })
     .matches(/^\d{10}$/)
     .withMessage("Phone number must be exactly 10 digits"),
 ];

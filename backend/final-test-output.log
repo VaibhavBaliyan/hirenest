@@ -1,0 +1,174 @@
+
+> backend@1.0.0 test
+> cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand
+
+  console.log
+    [dotenv@17.2.3] injecting env (8) from .env.test -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    ⏭  Skipping DB connection in test mode
+
+      at log (config/db.js:8:13)
+
+(node:15644) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+  console.log
+    ✅ Test database connected
+
+      at Object.log (__tests__/setup.js:17:13)
+
+  console.log
+    ✅ Test database disconnected
+
+      at Object.log (__tests__/setup.js:39:11)
+
+FAIL __tests__/auth.test.js (13.661 s)
+  Authentication API
+    POST /api/auth/register
+      √ should register a new user with valid data (1434 ms)
+      √ should register an employer user (563 ms)
+      √ should reject duplicate email (653 ms)
+      √ should reject weak password (less than 6 characters) (290 ms)
+      √ should reject invalid email format (307 ms)
+      √ should reject missing required fields (531 ms)
+      √ should reject invalid role (511 ms)
+    POST /api/auth/login
+      × should login with valid credentials (653 ms)
+      × should reject invalid email (380 ms)
+      × should reject invalid password (573 ms)
+      √ should reject missing email (539 ms)
+      √ should reject missing password (476 ms)
+    GET /api/auth/me
+      × should return current user with valid token (650 ms)
+      √ should reject request without token (362 ms)
+      √ should reject request with invalid token format (560 ms)
+      × should reject expired token (614 ms)
+      √ should reject token without Bearer prefix (717 ms)
+      × should reject token for deleted user (485 ms)
+    Token Security
+      √ should generate unique tokens for different users (533 ms)
+      √ should hash passwords before storing (570 ms)
+
+  ● Authentication API › POST /api/auth/login › should login with valid credentials
+
+    expect(received).toBeDefined()
+
+    Received: undefined
+
+    [0m [90m 117 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m200[39m)[33m;[39m
+     [90m 118 |[39m       expect(res[33m.[39mbody)[33m.[39mtoHaveProperty([32m"token"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 119 |[39m       expect(res[33m.[39mbody[33m.[39muser)[33m.[39mtoBeDefined()[33m;[39m
+     [90m     |[39m                             [31m[1m^[22m[39m
+     [90m 120 |[39m       expect(res[33m.[39mbody[33m.[39muser[33m.[39memail)[33m.[39mtoBe(testUser[33m.[39memail)[33m;[39m
+     [90m 121 |[39m       expect(res[33m.[39mbody[33m.[39muser)[33m.[39mnot[33m.[39mtoHaveProperty([32m"password"[39m)[33m;[39m
+     [90m 122 |[39m     })[33m;[39m[0m
+
+      at Object.toBeDefined (__tests__/auth.test.js:119:29)
+
+  ● Authentication API › POST /api/auth/login › should reject invalid email
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /invalid credentials|not found/i
+    Received string:  "Invalid email or password"
+
+    [0m [90m 129 |[39m
+     [90m 130 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m401[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 131 |[39m       expect(res[33m.[39mbody[33m.[39mmessage)[33m.[39mtoMatch([35m/invalid credentials|not found/i[39m)[33m;[39m
+     [90m     |[39m                                [31m[1m^[22m[39m
+     [90m 132 |[39m     })[33m;[39m
+     [90m 133 |[39m
+     [90m 134 |[39m     it([32m"should reject invalid password"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toMatch (__tests__/auth.test.js:131:32)
+
+  ● Authentication API › POST /api/auth/login › should reject invalid password
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /invalid credentials|incorrect password/i
+    Received string:  "Invalid email or password"
+
+    [0m [90m 139 |[39m
+     [90m 140 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m401[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 141 |[39m       expect(res[33m.[39mbody[33m.[39mmessage)[33m.[39mtoMatch(
+     [90m     |[39m                                [31m[1m^[22m[39m
+     [90m 142 |[39m         [35m/invalid credentials|incorrect password/i[39m[33m,[39m
+     [90m 143 |[39m       )[33m;[39m
+     [90m 144 |[39m     })[33m;[39m[0m
+
+      at Object.toMatch (__tests__/auth.test.js:141:32)
+
+  ● Authentication API › GET /api/auth/me › should return current user with valid token
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "697f69809b294b6fc0c0fe62"
+    Received: undefined
+
+    [0m [90m 176 |[39m
+     [90m 177 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m200[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 178 |[39m       expect(res[33m.[39mbody[33m.[39m_id)[33m.[39mtoBe(testUser[33m.[39m_id[33m.[39mtoString())[33m;[39m
+     [90m     |[39m                            [31m[1m^[22m[39m
+     [90m 179 |[39m       expect(res[33m.[39mbody[33m.[39memail)[33m.[39mtoBe(testUser[33m.[39memail)[33m;[39m
+     [90m 180 |[39m       expect(res[33m.[39mbody)[33m.[39mnot[33m.[39mtoHaveProperty([32m"password"[39m)[33m;[39m
+     [90m 181 |[39m     })[33m;[39m[0m
+
+      at Object.toBe (__tests__/auth.test.js:178:28)
+
+  ● Authentication API › GET /api/auth/me › should reject expired token
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /expired|invalid/i
+    Received string:  "Not authorized, token failed"
+
+    [0m [90m 204 |[39m
+     [90m 205 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m401[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 206 |[39m       expect(res[33m.[39mbody[33m.[39mmessage)[33m.[39mtoMatch([35m/expired|invalid/i[39m)[33m;[39m
+     [90m     |[39m                                [31m[1m^[22m[39m
+     [90m 207 |[39m     })[33m;[39m
+     [90m 208 |[39m
+     [90m 209 |[39m     it([32m"should reject token without Bearer prefix"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toMatch (__tests__/auth.test.js:206:32)
+
+  ● Authentication API › GET /api/auth/me › should reject token for deleted user
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 401
+    Received: 200
+
+    [0m [90m 223 |[39m         [33m.[39m[36mset[39m([32m"Authorization"[39m[33m,[39m [32m`Bearer ${testToken}`[39m)[33m;[39m
+     [90m 224 |[39m
+    [31m[1m>[22m[39m[90m 225 |[39m       expect(res[33m.[39mstatusCode)[33m.[39mtoBe([35m401[39m)[33m;[39m
+     [90m     |[39m                              [31m[1m^[22m[39m
+     [90m 226 |[39m     })[33m;[39m
+     [90m 227 |[39m   })[33m;[39m
+     [90m 228 |[39m[0m
+
+      at Object.toBe (__tests__/auth.test.js:225:30)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 14 passed, 20 total
+Snapshots:   0 total
+Time:        13.724 s, estimated 15 s
+Ran all test suites.

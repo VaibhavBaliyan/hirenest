@@ -4,13 +4,24 @@ import { useNavigate } from "react-router-dom";
 import { fetchMyApplications } from "../redux/slices/applicationSlice";
 import { useAuth } from "../hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
+import {
+  FileText,
+  CheckCircle,
+  Clock,
+  XCircle,
+  MapPin,
+  Briefcase,
+  DollarSign,
+  Eye,
+} from "lucide-react";
+import { Button, Card, Badge } from "../components/ui";
 
 function MyApplications() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, isJobSeeker } = useAuth();
   const { applications, loading, error } = useSelector(
-    (state) => state.applications
+    (state) => state.applications,
   );
 
   useEffect(() => {
@@ -25,41 +36,41 @@ function MyApplications() {
     dispatch(fetchMyApplications());
   }, [dispatch, isAuthenticated, isJobSeeker, navigate]);
 
-  const getStatusColor = (status) => {
+  const getStatusBadgeVariant = (status) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "warning";
       case "shortlisted":
-        return "bg-blue-100 text-blue-800";
+        return "primary";
       case "accepted":
-        return "bg-green-100 text-green-800";
+        return "success";
       case "rejected":
-        return "bg-red-100 text-red-800";
+        return "danger";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "secondary";
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
       case "pending":
-        return "⏳";
+        return <Clock size={16} />;
       case "shortlisted":
-        return "📋";
+        return <FileText size={16} />;
       case "accepted":
-        return "✅";
+        return <CheckCircle size={16} />;
       case "rejected":
-        return "❌";
+        return <XCircle size={16} />;
       default:
-        return "📄";
+        return <FileText size={16} />;
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           <p className="mt-4 text-gray-600">Loading your applications...</p>
         </div>
       </div>
@@ -67,7 +78,7 @@ function MyApplications() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 pb-24">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-purple-50 py-8 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -88,33 +99,39 @@ function MyApplications() {
 
         {/* Applications List */}
         {applications.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📭</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-              No Applications Yet
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Start applying to jobs to see your applications here
-            </p>
-            <button
-              onClick={() => navigate("/jobs")}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Browse Jobs
-            </button>
-          </div>
+          <Card padding="xl" className="text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-20 h-20 mx-auto mb-6 bg-primary-100 rounded-full flex items-center justify-center">
+                <FileText size={40} className="text-primary-600" />
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                No Applications Yet
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Start applying to jobs to see your applications here
+              </p>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => navigate("/jobs")}
+              >
+                Browse Jobs
+              </Button>
+            </div>
+          </Card>
         ) : (
           <div className="space-y-4">
             {applications.map((application) => (
-              <div
+              <Card
                 key={application._id}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+                padding="lg"
+                className="hover:shadow-xl transition-shadow"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <h3
                       onClick={() => navigate(`/jobs/${application.jobId._id}`)}
-                      className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer"
+                      className="text-xl font-semibold text-gray-900 mb-2 hover:text-primary-600 cursor-pointer transition-colors"
                     >
                       {application.jobId.title}
                     </h3>
@@ -122,35 +139,39 @@ function MyApplications() {
                       {application.jobId.company?.companyName || "Company Name"}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full">
-                        📍 {application.jobId.location}
-                      </span>
-                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                      <Badge variant="secondary">
+                        <MapPin size={14} className="mr-1" />
+                        {application.jobId.location}
+                      </Badge>
+                      <Badge variant="primary">
+                        <Briefcase size={14} className="mr-1" />
                         {application.jobId.jobType}
-                      </span>
+                      </Badge>
                       {application.jobId.salary?.min &&
                         application.jobId.salary?.max && (
-                          <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                            💰 ₹{application.jobId.salary.min.toLocaleString()}{" "}
-                            - ₹{application.jobId.salary.max.toLocaleString()}
-                          </span>
+                          <Badge variant="success">
+                            <DollarSign size={14} className="mr-1" />₹
+                            {application.jobId.salary.min.toLocaleString()} - ₹
+                            {application.jobId.salary.max.toLocaleString()}
+                          </Badge>
                         )}
                     </div>
                   </div>
-                  <span
-                    className={`px-4 py-2 rounded-full font-medium ${getStatusColor(
-                      application.status
-                    )}`}
+                  <Badge
+                    variant={getStatusBadgeVariant(application.status)}
+                    className="flex items-center gap-1.5"
                   >
-                    {getStatusIcon(application.status)}{" "}
-                    {application.status.charAt(0).toUpperCase() +
-                      application.status.slice(1)}
-                  </span>
+                    {getStatusIcon(application.status)}
+                    <span>
+                      {application.status.charAt(0).toUpperCase() +
+                        application.status.slice(1)}
+                    </span>
+                  </Badge>
                 </div>
 
                 {/* Cover Letter */}
                 {application.coverLetter && (
-                  <div className="mb-4 p-4 bg-gray-50 rounded-md">
+                  <div className="mb-4 p-4 bg-primary-50 rounded-lg border border-primary-100">
                     <p className="text-sm font-medium text-gray-700 mb-2">
                       Your Cover Letter:
                     </p>
@@ -167,15 +188,16 @@ function MyApplications() {
                       href={application.resumeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm"
+                      className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium"
                     >
-                      📄 View Resume
+                      <Eye size={16} />
+                      View Resume
                     </a>
                   </div>
                 )}
 
                 {/* Footer */}
-                <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t">
+                <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-gray-100">
                   <span>
                     Applied{" "}
                     {formatDistanceToNow(new Date(application.createdAt), {
@@ -191,7 +213,7 @@ function MyApplications() {
                     </span>
                   )}
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}
@@ -217,7 +239,7 @@ function MyApplications() {
                   <div className="text-xs text-gray-600">Pending</div>
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-blue-600">
+                  <div className="text-xl font-bold text-primary-600">
                     {
                       applications.filter((app) => app.status === "shortlisted")
                         .length
