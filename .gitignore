@@ -6,6 +6,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # Build
 dist/
@@ -17,6 +18,17 @@ uploads/
 # Test files
 test-*.js
 test-*.json
+
+# Test coverage & output
+coverage/
+*.log
+*-output.log
+*-results.txt
+jest.config.json
+
+# Temp / scratch files
+*.txt
+!README*.txt
 
 # OS
 .DS_Store
